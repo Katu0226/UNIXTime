@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unix Time表示</title>
+</head>
+<body>
+
+<h1>2038年問題までの残り時間</h1>
+<p id="currentDateTime"></p>
+<p id="unixTimeDecimal"></p>
+<p id="unixTimeBinary"></p>
+<p id="timeUntil2038"></p>
+<p id="bit31TurnedOnTime"></p>
+<p id="bit32TurnedOnTime"></p>
+
+<script>
+  function updateDateTime() {
+    const now = new Date();
+    const formattedDateTime = now.toLocaleString();
+    const dateTimeElement = document.getElementById('currentDateTime');
+    dateTimeElement.textContent = `現在の日時: ${formattedDateTime}`;
+  }
+
+  function updateUnixTime() {
+    // 現在のUnix Timeを取得
+    const unixTime = Math.floor(Date.now() / 1000);
+
+    // 十進数で表示
+    const decimalElement = document.getElementById('unixTimeDecimal');
+    decimalElement.textContent = `Unix Time（十進数）: ${unixTime}`;
+
+    // 二進数で表示（8ビットごとにスペースで区切る）
+    const binaryElement = document.getElementById('unixTimeBinary');
+    const binaryString = unixTime.toString(2).padStart(32, '0'); // 32ビットと仮定
+    const formattedBinaryString = binaryString.match(/.{1,8}/g).join(' ');
+    binaryElement.textContent = `Unix Time（二進数）: ${formattedBinaryString}`;
+  }
+
+  function isLeapYear(year) {
+    // 閏年かどうかを判定する関数
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  }
+
+  function updateTimeUntil2038() {
+    const now = new Date();
+    const unixTime2038 = new Date(2038, 0, 19, 3, 14, 7);
+    const timeDifference = unixTime2038 - now;
+
+    let remainingTime = timeDifference;
+
+    const years = Math.floor(remainingTime / (1000 * 60 * 60 * 24 * 365.25));
+    remainingTime -= years * (1000 * 60 * 60 * 24 * 365.25);
+
+    const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+    remainingTime -= days * (1000 * 60 * 60 * 24);
+
+    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+    remainingTime -= hours * (1000 * 60 * 60);
+
+    const minutes = Math.floor(remainingTime / (1000 * 60));
+    remainingTime -= minutes * (1000 * 60);
+
+    const seconds = Math.floor(remainingTime / 1000);
+
+    const timeUntil2038Element = document.getElementById('timeUntil2038');
+    timeUntil2038Element.textContent = `2038年問題までの残り時間: ${years}年 ${days}日 ${hours}時間 ${minutes}分 ${seconds}秒`;
+  }
+
+  function updateBit31TurnedOnTime() {
+    const unixTimeBit31 = new Date(2004, 0, 10, 13, 37, 4); // 31ビット目が1になった時刻
+    const formattedBit31TurnedOnTime = unixTimeBit31.toLocaleString();
+    const bit31TurnedOnTimeElement = document.getElementById('bit31TurnedOnTime');
+    bit31TurnedOnTimeElement.textContent = `31ビット目が1になった時刻: ${formattedBit31TurnedOnTime}`;
+  }
+
+  function updateBit32TurnedOnTime() {
+    const unixTimeBit32 = new Date(2038, 0, 19, 3, 14, 7); // 32ビット目が1になる時刻
+    const formattedBit32TurnedOnTime = unixTimeBit32.toLocaleString();
+    const bit32TurnedOnTimeElement = document.getElementById('bit32TurnedOnTime');
+    bit32TurnedOnTimeElement.textContent = `32ビット目が1になる時刻: ${formattedBit32TurnedOnTime}`;
+  }
+
+  // 最初の表示
+  updateDateTime();
+  updateUnixTime();
+  updateTimeUntil2038();
+  updateBit31TurnedOnTime();
+  updateBit32TurnedOnTime();
+
+  // 1秒ごとに更新
+  setInterval(() => {
+    updateDateTime();
+    updateUnixTime();
+    updateTimeUntil2038();
+    updateBit31TurnedOnTime();
+    updateBit32TurnedOnTime();
+  }, 1000);
+</script>
+
+</body>
+</html>
